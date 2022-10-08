@@ -9,8 +9,13 @@ describe("GiveFire", function () {
   async function deployFixture() {
     const [userA, userB] = await ethers.getSigners();
 
+    const TestDAI = await ethers.getContractFactory("TestDAI");
+    const testDAI = await TestDAI.deploy();
+
+    await testDAI.deployed();
+
     const GiveFire = await ethers.getContractFactory("GiveFire");
-    const giveFire = await GiveFire.deploy();
+    const giveFire = await GiveFire.deploy(testDAI.address);
 
     return { giveFire, userA, userB };
   }

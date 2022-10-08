@@ -10,7 +10,7 @@ contract GiveFire {
     mapping(address => bool) trustedBenefactors;
     mapping(uint256 => Proposal) proposals;
     mapping(uint256 => Group) groups;
-    mapping(bytes32 => address) invites;
+    mapping(bytes32 => address) invites; // Unused for now
     uint256 nextGroupId;
     uint256 nextProposalId;
     
@@ -24,7 +24,8 @@ contract GiveFire {
         address[] donors;
     }
 
-    struct Invitation {
+    // Unused for now
+    struct Invitation { 
         address invitee;
         uint256 groupId;
     }
@@ -33,7 +34,9 @@ contract GiveFire {
     event GroupMemberAdded(uint256 groupId, address newMember, address inviter);
     event GroupMemberLeft(uint256 groupId, address leftMember);
 
-    constructor() {}
+    constructor(IERC20 _token) {
+        token = _token;
+    }
 
     modifier checkGroupFull(uint256 groupId) {
         Group memory group = groups[groupId];
