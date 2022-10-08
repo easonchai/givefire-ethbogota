@@ -5,8 +5,8 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract GiveFireDAI is ERC20, Ownable {
-    constructor() ERC20("GiveFire DAI", "DAI") {
+contract USDC is ERC20, Ownable {
+    constructor() ERC20("GiveFire USDC", "USDC") {
         _mint(msg.sender, 1000 * 10 ** decimals());
     }
 
