@@ -30,8 +30,16 @@ contract GiveFire {
     }
 
     event GroupCreated(uint256 groupId, address creator);
+    event GroupMemberAdded(uint256 groupId, address newMember, address inviter);
+    event GroupMemberLeft(uint256 groupId, address leftMember);
 
     constructor() {}
+
+    modifier checkGroupFull(uint256 groupId) {
+        Group memory group = groups[groupId];
+        require(group.donors.length < 5, "Group is full");
+        _;
+    }
 
     function isTrustedBenefactor(address _benefactorAddress) public view returns(bool){
         return trustedBenefactors[_benefactorAddress];
@@ -85,10 +93,49 @@ contract GiveFire {
         return false;
     }
 
+    /**
+     * Adds a member to a group
+     */
+    function addToGroup(uint256 _groupId, address _toAdd) public checkGroupFull(_groupId) {
+        Group storage group = groups[_groupId];
+        group.donors.push(_toAdd);
+
+        emit GroupMemberAdded(_groupId, _toAdd, msg.sender);
+    }
+
+    /**
+     * Leaves a group
+     */
+    function leaveGroup(uint256 _groupId) public {
+        require(isGroupMember(_groupId, msg.sender), "Not a member of group");
+        
+        /**
+         * For this, we have to loop through the array and get the index of the member
+         * Then, we will replace the index with the last member and pop the array
+         */
+        Group storage group = groups[_groupId];
+        uint256 members = group.donors.length;
+        for (uint256 i = 0; i < members; i++) {
+            if (group.donors[i] == msg.sender) {
+                group.donors[i] = group.donors[members - 1];
+                group.donors.pop();
+                return;
+            }
+        }
+
+        emit GroupMemberLeft(_groupId, msg.sender);
+    }
+
+    /**
+     * Creates an invite token for a user to join a group
+     */
     // function inviteToGroup(address memory _toInvite) public {
 
     // }
 
+    /**
+     * Joins a group using an invite token
+     */
     // function joinGroup(uint256 _groupId) {
 
     // }
