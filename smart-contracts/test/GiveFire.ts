@@ -191,7 +191,7 @@ describe("GiveFire", function () {
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
         await dai
           .connect(userC)
-          .approve(giveFire.address, ethers.utils.parseEther("1.0"));
+          .approve(giveFire.address, ethers.utils.parseEther("2.0"));
         await dai
           .connect(userD)
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
@@ -201,7 +201,7 @@ describe("GiveFire", function () {
         await giveFire.donate(proposalId);
 
         expect(await dai.balanceOf(benefactor)).to.be.equal(
-          ethers.utils.parseEther("41.0")
+          ethers.utils.parseEther("42.0")
         );
       }
       expect(proposalCreated).to.exist;

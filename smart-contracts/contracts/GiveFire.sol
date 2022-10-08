@@ -132,9 +132,6 @@ contract GiveFire is AccessControl {
     //     // Currently we cap the donation amount to $10. Since we are using stables, we don't need to worry about exchange rates
     //     require(_donationAmount <= 10000000000000000000, "Donation amount too large");
     //     require(_donationAmount >= 1000000000000000000, "Donation amount too little");
-    //     if (token.allowance(msg.sender, address(this)) < _donationAmount) {
-    //         token.approve(address(this), _donationAmount);
-    //     }
     // }
 
     /**
