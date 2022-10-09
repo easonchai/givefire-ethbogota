@@ -23,17 +23,20 @@ import RecentView from "../src/views/RecentView";
 import PillButton from "../src/components/PillButton";
 import { useRouter } from "next/router";
 import ReactSlider from "react-slider";
-import GiveFire from "../types/GiveFire";
+import USDC from "../types/USDC";
 
 const Proposal: NextPage = () => {
   const router = useRouter();
   const [donationAmount, setDonationAmount] = React.useState<number>(5);
   const [success, setSuccess] = React.useState<boolean>(false);
   const { config } = usePrepareContractWrite({
-    addressOrName: "0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2",
-    contractInterface: GiveFire.abi,
-    functionName: "donate",
-    args: [0],
+    addressOrName: "0x2b4bA7718Bf31Ab1C5c486F3F0a3e6dcB422C02C",
+    contractInterface: USDC.abi,
+    functionName: "approve",
+    args: [
+      "0x18874B584adC9fDc00649512AE60eC5074467AE3",
+      ethers.utils.parseEther("10.0"),
+    ],
   });
 
   const { write } = useContractWrite({
