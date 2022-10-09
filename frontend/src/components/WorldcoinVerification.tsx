@@ -15,7 +15,7 @@ const sizes = {
   "4xl": "26",
 };
 
-export const Avatar = ({
+export const WorldcoinVerification = ({
   children,
   className,
   size = "default",
@@ -32,4 +32,4 @@ export const Avatar = ({
   );
 };
 
-export default Avatar;
+export default WorldcoinVerification;

@@ -115,13 +115,13 @@ const Proposal: NextPage = () => {
           value={donationAmount}
           min={1}
           max={10}
-          renderThumb={(props, state) => (
+          renderThumb={(props) => (
             <div
               {...props}
               className="w-6 h-6 bg-primary rounded-full transform -translate-y-[40%] outline-none"
             />
           )}
-          renderTrack={(props, state) => (
+          renderTrack={(props) => (
             <div
               {...props}
               className="h-[3px] bg-primary bg-opacity-20 rounded-full"
