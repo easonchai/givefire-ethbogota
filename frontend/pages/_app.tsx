@@ -48,7 +48,7 @@ const client = createClient({
       chains,
       options: {
         enableLogging: true,
-        clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID, // Get your own client id from https://dashboard.web3auth.io
+        clientId: process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || "", // Get your own client id from https://dashboard.web3auth.io
         network: "testnet", // web3auth network
         chainId: "0x1", // chainId that you want to connect with
       },
