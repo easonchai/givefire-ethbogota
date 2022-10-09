@@ -1,10 +1,13 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("LOCAL_DB_DATABASE_URL")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("HEROKU_DB_DATABASE_URL")
 }
 
 model Donor {
@@ -64,6 +67,3 @@ model Funders {
   funderAmount Float
   Proposal Proposal? @relation(fields: [proposalId], references: [proposalId])
 }
-
-
-

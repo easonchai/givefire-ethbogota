@@ -1,6 +1,5 @@
-import { PrismaClient } from './node_modules/.prisma/client/index';
-import express from 'express';
-const { cron } = require('node-cron');
+import { PrismaClient } from '@prisma/client'
+import express from 'express'
 
 const prisma = new PrismaClient()
 const app = express()
@@ -589,17 +588,6 @@ app.put('/addFundersToProposal/:proposalId', async (req, res) => {
  * 2. Get All Funders by Proposal ID
  * 3. 
 */
-
-        
-
-
-
-
-
-
-
-    
-
 
 
 const server = app.listen(3000, () =>

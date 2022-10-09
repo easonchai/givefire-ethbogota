@@ -19,10 +19,11 @@ CREATE TABLE "Group" (
 -- CreateTable
 CREATE TABLE "Proposal" (
     "proposalId" TEXT NOT NULL,
-    "beneficiaryId" TEXT NOT NULL,
+    "beneficiaryId" TEXT,
     "groupId" TEXT NOT NULL DEFAULT '',
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "votes" TEXT[],
     "isApproved" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "Proposal_pkey" PRIMARY KEY ("proposalId")
@@ -91,7 +92,7 @@ ALTER TABLE "Donor" ADD CONSTRAINT "Donor_donorGroupId_fkey" FOREIGN KEY ("donor
 ALTER TABLE "Proposal" ADD CONSTRAINT "Proposal_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("groupId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Proposal" ADD CONSTRAINT "Proposal_beneficiaryId_fkey" FOREIGN KEY ("beneficiaryId") REFERENCES "Beneficiary"("beneficiaryId") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Proposal" ADD CONSTRAINT "Proposal_beneficiaryId_fkey" FOREIGN KEY ("beneficiaryId") REFERENCES "Beneficiary"("beneficiaryId") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Donations" ADD CONSTRAINT "Donations_beneficiaryId_fkey" FOREIGN KEY ("beneficiaryId") REFERENCES "Beneficiary"("beneficiaryId") ON DELETE RESTRICT ON UPDATE CASCADE;
