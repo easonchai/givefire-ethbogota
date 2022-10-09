@@ -18,13 +18,13 @@ describe("GiveFire", function () {
   async function deployFixture() {
     const [userA, userB] = await ethers.getSigners();
 
-    const GiveFireDAI = await ethers.getContractFactory("GiveFireDAI");
-    const dai = await GiveFireDAI.deploy();
+    const USDC = await ethers.getContractFactory("USDC");
+    const usdc = await USDC.deploy();
 
-    await dai.deployed();
+    await usdc.deployed();
 
     const GiveFire = await ethers.getContractFactory("GiveFire");
-    const giveFire = await GiveFire.deploy(dai.address);
+    const giveFire = await GiveFire.deploy(usdc.address);
 
     return { giveFire, userA, userB };
   }
@@ -35,13 +35,13 @@ describe("GiveFire", function () {
       signers;
     const addresses = await signers.map((signer) => signer.address);
 
-    const GiveFireDAI = await ethers.getContractFactory("GiveFireDAI");
-    const dai = await GiveFireDAI.deploy();
+    const USDC = await ethers.getContractFactory("USDC");
+    const usdc = await USDC.deploy();
 
-    await dai.deployed();
+    await usdc.deployed();
 
     const GiveFire = await ethers.getContractFactory("GiveFire");
-    const giveFire = await GiveFire.deploy(dai.address);
+    const giveFire = await GiveFire.deploy(usdc.address);
 
     // Create a group
     const tx = await giveFire.createGroup();
@@ -53,7 +53,7 @@ describe("GiveFire", function () {
     // Send the funds to other people & also add them to group
     // Start from 1 because first address is ownself
     for (let i = 1; i < 5; i++) {
-      await dai.transfer(addresses[i], ethers.utils.parseEther("50.0")); // Transferring $50 DAI
+      await usdc.transfer(addresses[i], ethers.utils.parseEther("50.0")); // Transferring $50 DAI
       await giveFire.addToGroup(groupId, addresses[i]);
     }
 
@@ -62,7 +62,7 @@ describe("GiveFire", function () {
 
     return {
       giveFire,
-      dai,
+      usdc,
       userA,
       userB,
       userC,
@@ -172,7 +172,7 @@ describe("GiveFire", function () {
         userD,
         userE,
         benefactor,
-        dai,
+        usdc,
       } = await loadFixture(groupFixture);
 
       const tx = await giveFire.createProposal(benefactor.address, groupId);
@@ -183,24 +183,24 @@ describe("GiveFire", function () {
         const [proposalId, groupId, proposer, benefactor] =
           proposalCreated.args;
 
-        await dai
+        await usdc
           .connect(userA)
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
-        await dai
+        await usdc
           .connect(userB)
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
-        await dai
+        await usdc
           .connect(userC)
           .approve(giveFire.address, ethers.utils.parseEther("2.0"));
-        await dai
+        await usdc
           .connect(userD)
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
-        await dai
+        await usdc
           .connect(userE)
           .approve(giveFire.address, ethers.utils.parseEther("10.0"));
         await giveFire.donate(proposalId);
 
-        expect(await dai.balanceOf(benefactor)).to.be.equal(
+        expect(await usdc.balanceOf(benefactor)).to.be.equal(
           ethers.utils.parseEther("42.0")
         );
       }
