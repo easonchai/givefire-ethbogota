@@ -16,6 +16,20 @@ import TrendingView from "../src/views/TrendingView";
 import RecentView from "../src/views/RecentView";
 import PillButton from "../src/components/PillButton";
 import { useRouter } from "next/router";
+import {
+  createSocketConnection,
+  EVENTS
+} from '@pushprotocol/socket';
+import * as PushAPI from "@pushprotocol/restapi";
+import { NotificationItem, chainNameType, SubscribedModal } from '@pushprotocol/uiweb';
+  
+const pushSDKSocket = createSocketConnection({
+  user: 'eip155:5:0x66263b35bae43592b4A46F4Fca4D8613987610d4', // CAIP, see below
+  env: 'staging',
+  socketOptions: { autoConnect: false }
+});
+
+pushSDKSocket?.connect();
 
 const Home: NextPage = () => {
   const { address, connector, isConnected } = useAccount();
@@ -52,6 +66,7 @@ const Home: NextPage = () => {
     };
 
     getEnsData();
+
   }, []);
 
   const addresses = [
@@ -60,6 +75,11 @@ const Home: NextPage = () => {
     "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
     "0xd8da6bf26964af9d7eed9e03e53415d388a96045",
   ];
+  
+  const notifications = await PushAPI.user.getFeeds({
+    user: 'eip155:42:0x66263b35bae43592b4A46F4Fca4D8613987610d4', // user address in CAIP
+    env: 'staging'
+  });
 
   return (
     <MainLayout>
@@ -79,7 +99,7 @@ const Home: NextPage = () => {
             {avatar ? (
               <img src={avatar} alt={name} className="w-10 h-10" />
             ) : (
-              <Blockies seed={address} />
+              <Blockies seed={address || "0xbad"} />
             )}
           </Avatar>
         </div>
@@ -135,6 +155,33 @@ const Home: NextPage = () => {
               onClick={() => router.push("/fund")}
             />
           </div>
+          {notifications.map((oneNotification, i) => {
+    const { 
+    cta,
+    title,
+    message,
+    app,
+    icon,
+    image,
+    url,
+    blockchain,
+    secret,
+    notification
+    } = oneNotification;
+
+    return (
+      <NotificationItem
+        key={`notif-${i}`}
+        notificationTitle={secret ? notification['title'] : title}
+        notificationBody={secret ? notification['body'] : message}
+        cta={cta}
+        app={app}
+        icon={icon}
+        image={image}
+        url={url}
+        chainName={blockchain as chainNameType} theme={undefined}      />
+    );
+})}
         </div>
       </MobileLayout>
       <FeedLayout>
@@ -153,7 +200,6 @@ const Home: NextPage = () => {
         {view === "Recent" ? <RecentView /> : <TrendingView />}
       </FeedLayout>
     </MainLayout>
-  );
-};
+  )};
 
 export default Home;
