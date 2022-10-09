@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { clsx } from "clsx";
+import { useRouter } from "next/router";
 
 interface ICardProps {
   children: any;
@@ -17,8 +18,16 @@ export const Card = ({
   benefactor,
   imageUrl,
 }: ICardProps): JSX.Element => {
+  const router = useRouter();
+
   return (
-    <div className={clsx("flex flex-col w-full h-full my-5", className)}>
+    <div
+      className={clsx(
+        "flex flex-col w-full h-full my-5 cursor-pointer",
+        className
+      )}
+      onClick={() => router.push("/fund")}
+    >
       <img src={imageUrl} alt="" className="mb-6" />
       <p className="text-[28px] mb-2">{title}</p>
       <p className="text-sm mb-4">by {benefactor}</p>

@@ -11,6 +11,9 @@ import Avatar from "../src/components/Avatar";
 import Link from "next/link";
 import FeedLayout from "../src/layouts/FeedLayout";
 import Card from "../src/components/Card";
+import clsx from "clsx";
+import TrendingView from "../src/views/TrendingView";
+import RecentView from "../src/views/RecentView";
 
 const Home: NextPage = () => {
   const { address, connector, isConnected } = useAccount();
@@ -19,6 +22,7 @@ const Home: NextPage = () => {
   const [firstAvatar, setFirstAvatar] = React.useState<string | null>();
   const [name, setName] = React.useState<string | null>();
   const [firstName, setFirstName] = React.useState<string | null>();
+  const [view, setView] = React.useState<"Recent" | "Trending">("Trending");
 
   React.useEffect(() => {
     const provider = new ethers.providers.AlchemyProvider(
@@ -72,7 +76,7 @@ const Home: NextPage = () => {
           <img src="/icons/bell.svg" alt="bell" />
           <Avatar>
             {avatar ? (
-              <img src={avatar} alt={name} />
+              <img src={avatar} alt={name} className="w-10 h-10" />
             ) : (
               <Blockies seed={address} />
             )}
@@ -82,7 +86,7 @@ const Home: NextPage = () => {
           <p className="text-sm">Your Firegiving Circle</p>
           <div className="flex flex-row justify-center space-x-2 mt-4 mb-1">
             <Avatar size="sm" className="mr-2">
-              <img src={avatar} alt={name} />
+              <img src={avatar} alt={name} className="w-6 h-6" />
             </Avatar>
             +
             {/* {addresses.map((address, index) => (
@@ -130,40 +134,26 @@ const Home: NextPage = () => {
       </MobileLayout>
       <FeedLayout>
         <div className="flex flex-row items-center justify-end space-x-2 w-full">
-          <button className="rounded-full py-2 px-[10px] text-primary">
+          <button
+            className={clsx(
+              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
+              view === "Recent" && "bg-primary bg-opacity-20"
+            )}
+            onClick={() => setView("Recent")}
+          >
             Recent
           </button>
-          <button className="rounded-full py-2 px-[10px] text-primary bg-primary bg-opacity-20">
+          <button
+            className={clsx(
+              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
+              view === "Trending" && "bg-primary bg-opacity-20"
+            )}
+            onClick={() => setView("Trending")}
+          >
             Trending
           </button>
         </div>
-        <Card
-          title="My Body, My Rights"
-          benefactor="UnicornDAO"
-          imageUrl="/campaigns/mbmc_cover.png"
-        >
-          When people are able to access abortion care with dignity, in a safe
-          and supportive environment, they thrive - leading to healthier
-          families and stronger communities.
-        </Card>
-        <Card
-          title="Support kids with cleft lips"
-          benefactor="FISULAB"
-          imageUrl="/campaigns/cleft_cover.png"
-        >
-          A Colombian non-profit foundation dedicated to patients with cleft lip
-          and palate through the provision of comprehensive rehabilitation
-          services with warmth and professionalism.
-        </Card>
-        <Card
-          title="Plant more trees"
-          benefactor="Arbor Day Foundation"
-          imageUrl="/campaigns/trees_cover.png"
-        >
-          When people are able to access abortion care with dignity, in a safe
-          and supportive environment, they thrive - leading to healthier
-          families and stronger communities.
-        </Card>
+        {view === "Recent" ? <RecentView /> : <TrendingView />}
       </FeedLayout>
     </MainLayout>
   );

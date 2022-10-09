@@ -80,7 +80,7 @@ export const SignInWithEthereumButton = ({
 
   return (
     <button
-      className="w-full bg-secondary text-offwhite text-sm flex items-center justify-center py-6 rounded-[5px] mt-24"
+      className="w-full bg-primary text-offwhite text-sm flex items-center justify-center py-6 rounded-[5px] mt-24"
       disabled={!state.nonce || state.loading}
       onClick={signIn}
     >

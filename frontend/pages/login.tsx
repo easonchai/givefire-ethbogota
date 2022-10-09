@@ -31,10 +31,10 @@ const Login: NextPage = () => {
   }>({});
 
   React.useEffect(() => {
-    if (address) {
+    if (address && state && state.address) {
       router.push("/");
     }
-  }, [address, router]);
+  }, [address, state, router]);
 
   // Fetch user when:
   React.useEffect(() => {
