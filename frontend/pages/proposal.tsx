@@ -115,6 +115,8 @@ const Proposal: NextPage = () => {
           value={donationAmount}
           min={1}
           max={10}
+          thumbClassName="example-thumb"
+          trackClassName="example-track"
           renderThumb={(props, state) => (
             <div
               {...props}
