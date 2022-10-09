@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "Donor" (
-    "donorId" TEXT NOT NULL,
+    "donorId" SERIAL NOT NULL,
     "donorNickname" TEXT NOT NULL,
-    "donorGroupId" TEXT,
+    "donorGroupId" INTEGER,
     "donorWalletAddress" TEXT NOT NULL,
 
     CONSTRAINT "Donor_pkey" PRIMARY KEY ("donorId")
@@ -10,7 +10,7 @@ CREATE TABLE "Donor" (
 
 -- CreateTable
 CREATE TABLE "Group" (
-    "groupId" TEXT NOT NULL,
+    "groupId" SERIAL NOT NULL,
     "groupName" TEXT NOT NULL,
 
     CONSTRAINT "Group_pkey" PRIMARY KEY ("groupId")
@@ -18,9 +18,9 @@ CREATE TABLE "Group" (
 
 -- CreateTable
 CREATE TABLE "Proposal" (
-    "proposalId" TEXT NOT NULL,
-    "beneficiaryId" TEXT,
-    "groupId" TEXT NOT NULL DEFAULT '',
+    "proposalId" SERIAL NOT NULL,
+    "beneficiaryId" INTEGER,
+    "groupId" INTEGER NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
     "votes" TEXT[],
@@ -31,9 +31,10 @@ CREATE TABLE "Proposal" (
 
 -- CreateTable
 CREATE TABLE "Beneficiary" (
-    "beneficiaryId" TEXT NOT NULL,
+    "beneficiaryId" SERIAL NOT NULL,
     "fundingTarget" DOUBLE PRECISION NOT NULL,
     "fundingReceived" DOUBLE PRECISION NOT NULL,
+    "worldcoinHash" TEXT NOT NULL,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
 
@@ -42,9 +43,9 @@ CREATE TABLE "Beneficiary" (
 
 -- CreateTable
 CREATE TABLE "Donations" (
-    "donationId" TEXT NOT NULL,
-    "beneficiaryId" TEXT NOT NULL,
-    "proposalId" TEXT NOT NULL,
+    "donationId" SERIAL NOT NULL,
+    "beneficiaryId" INTEGER NOT NULL,
+    "proposalId" INTEGER NOT NULL,
     "donationTimestamp" TIMESTAMP(3) NOT NULL,
     "donationAmount" DOUBLE PRECISION NOT NULL,
 
@@ -53,9 +54,9 @@ CREATE TABLE "Donations" (
 
 -- CreateTable
 CREATE TABLE "Funders" (
-    "funderId" TEXT NOT NULL,
-    "proposalId" TEXT NOT NULL,
-    "donorId" TEXT NOT NULL,
+    "funderId" SERIAL NOT NULL,
+    "proposalId" INTEGER NOT NULL,
+    "donorId" INTEGER NOT NULL,
     "funderAmount" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "Funders_pkey" PRIMARY KEY ("funderId")

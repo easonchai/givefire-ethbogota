@@ -12,24 +12,24 @@ datasource db {
 }
 
 model Donor {
-  donorId            String  @id @unique @default(uuid())
-  donorNickname      String  @unique
-  donorGroupId       String?
-  donorWalletAddress String  @unique
-  Group              Group?  @relation(fields: [donorGroupId], references: [groupId])
+  donorId            Int    @id @unique @default(autoincrement())
+  donorNickname      String @unique
+  donorGroupId       Int?
+  donorWalletAddress String @unique
+  Group              Group? @relation(fields: [donorGroupId], references: [groupId])
 }
 
 model Group {
-  groupId   String     @id @unique @default(uuid())
+  groupId   Int        @id @unique @default(autoincrement())
   groupName String
   proposals Proposal[]
   donors    Donor[]
 }
 
 model Proposal {
-  proposalId    String       @id @unique @default(uuid())
-  beneficiaryId String?
-  groupId       String       @default("")
+  proposalId    Int          @id @unique @default(autoincrement())
+  beneficiaryId Int?
+  groupId       Int
   startDate     DateTime
   endDate       DateTime
   votes         String[]
@@ -41,7 +41,7 @@ model Proposal {
 }
 
 model Beneficiary {
-  beneficiaryId   String      @id @unique @default(uuid())
+  beneficiaryId   Int         @id @unique @default(autoincrement())
   fundingTarget   Float
   fundingReceived Float
   worldcoinHash   String
@@ -52,9 +52,9 @@ model Beneficiary {
 }
 
 model Donations {
-  donationId        String       @id @unique @default(uuid())
-  beneficiaryId     String
-  proposalId        String
+  donationId        Int          @id @unique @default(autoincrement())
+  beneficiaryId     Int
+  proposalId        Int
   donationTimestamp DateTime
   donationAmount    Float
   Beneficiary       Beneficiary? @relation(fields: [beneficiaryId], references: [beneficiaryId])
@@ -62,9 +62,9 @@ model Donations {
 }
 
 model Funders {
-  funderId     String    @id @unique @default(uuid())
-  proposalId   String
-  donorId      String
+  funderId     Int       @id @unique @default(autoincrement())
+  proposalId   Int
+  donorId      Int
   funderAmount Float
   Proposal     Proposal? @relation(fields: [proposalId], references: [proposalId])
 }
