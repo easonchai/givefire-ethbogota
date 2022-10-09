@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract USDC is ERC20, Ownable {
     constructor() ERC20("GiveFire USDC", "USDC") {
-        _mint(msg.sender, 1000 * 10 ** decimals());
+        _mint(msg.sender, 10000 * 10 ** decimals());
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
