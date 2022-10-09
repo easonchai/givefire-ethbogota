@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import express from 'express'
+import * as PushAPI from "@pushprotocol/restapi";
+import * as ethers from "ethers";
 
 const prisma = new PrismaClient()
 const app = express()
@@ -588,6 +590,73 @@ app.put('/addFundersToProposal/:proposalId', async (req, res) => {
  * 2. Get All Funders by Proposal ID
  * 3. 
 */
+
+/**
+ * API Declarations for Beneficiary
+ * 
+ * 1. Create Beneficiary
+ * 2. Send Notification
+ */
+
+const signer = new ethers.Wallet(`0x${process.env.CHANNEL_ADDRESS_SECRET_KEY}`)
+
+
+/**
+ * Send notification to benefactor
+ * 
+ * @param {string} beneficiaryId
+ * @param {string} notificationTitle
+ * @param {string} notificationBody
+ * @param {string} payloadTitle
+ * @param {string} payloadBody
+ * @param {int} notificationType
+ * 
+ */
+// app.get('/sendNotification/:beneficiaryId', async (req, res) => {
+//     const { notificationTitle, notificationBody, payloadTitle, payloadBody, notificationType } = req.body
+//     if (!notificationTitle || !notificationBody || !payloadTitle || !payloadBody || !notificationType) {
+//         res.status(400).json({ error: 'Missing required fields' })
+//         return
+//     } else {
+//         const beneficiary = await prisma.beneficiary.findUnique({
+//             where: {
+//                 beneficiaryId: req.params.beneficiaryId
+//             },
+//             //From chosen beneficiary, get the donations made to the beneficiary and the proposal id to eventually get the funders's address
+//             include: {
+//                 donations: {
+//                     include: {
+//                         Proposal: {
+//                             include: {
+//                                 funders: true
+//         })
+//         //get the list of donors
+//         const donorList = beneficiary.proposals[0].funders.map(funder => funder.donor)
+        
+    // //From the beneficiaryId, get the donators field details. Then, in the donators field, get the proposalId, then from the proposalId, get the funders field details. Then, in the funders field, get all the donorId, then from the donorId, get the donorAddress field details. If there are no funders, then return an error. If there is only one funder, notification type is 3. If there are more than one funders, notification type is 4.
+    // const apiResponse = await PushAPI.payloads.sendNotification({
+    //     signer,
+    //     type: 3, // subset
+    //     identityType: 2, // direct payload
+    //     notification: {
+    //     title: `[SDK-TEST] notification TITLE:`,
+    //     body: `[sdk-test] notifica  tion BODY`
+    //     },
+    //     payload: {
+    //     title: `[sdk-test] payload title`,
+    //     body: `sample msg body`,
+    //     cta: '',
+    //     img: ''
+    //     },
+    //     recipients: 'eip155:5:0x66263b35bae43592b4A46F4Fca4D8613987610d4', // recipients addresses
+    //     channel: 'eip155:5:0x07e96f02d57A1F0EACe103028D0b26fd2D5f283E', // your channel address
+    //     env: 'staging'
+    // });
+
+
+    
+
+
 
 
 const server = app.listen(3000, () =>
