@@ -3,7 +3,13 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import React from "react";
-import { useEnsAvatar, useAccount, useEnsName } from "wagmi";
+import {
+  useEnsAvatar,
+  useAccount,
+  useEnsName,
+  usePrepareContractWrite,
+  useContractWrite,
+} from "wagmi";
 import MainLayout from "../src/layouts/MainLayout";
 import MobileLayout from "../src/layouts/MobileLayout";
 import Blockies from "react-blockies";
@@ -17,13 +23,54 @@ import RecentView from "../src/views/RecentView";
 import PillButton from "../src/components/PillButton";
 import { useRouter } from "next/router";
 import ReactSlider from "react-slider";
+import GiveFire from "../types/GiveFire";
 
 const Proposal: NextPage = () => {
   const router = useRouter();
   const [donationAmount, setDonationAmount] = React.useState<number>(5);
+  const [success, setSuccess] = React.useState<boolean>(false);
+  const { config } = usePrepareContractWrite({
+    addressOrName: "0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2",
+    contractInterface: GiveFire.abi,
+    functionName: "donate",
+    args: [0],
+  });
+
+  const { write } = useContractWrite({
+    ...config,
+    onSuccess(data) {
+      triggerDonation();
+    },
+  });
+
+  const triggerDonation = async () => {
+    // This function has a few steps.
+    // First, it will prompt for a transaction to approve said amount
+
+    // Only after the transaction is approved, it will instantly make a call to the backend
+    await fetch("http://localhost:3001/updateProposalVotes/0", {
+      method: "POST",
+      body: JSON.stringify({
+        votes: 5,
+      }),
+    })
+      .then((response) => {
+        if (response.status !== 200) {
+          throw Error(`Request failed with status ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        setSuccess(true);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   return (
-    <MainLayout className="bg-secondary relative">
+    <MainLayout className=" relative" bg="bg-secondary">
       <Head>
         <title>GiveFire</title>
         <meta
@@ -139,7 +186,7 @@ const Proposal: NextPage = () => {
           <PillButton
             value="Donate"
             selected={true}
-            onSelect={() => console.log("magic")}
+            onSelect={() => write?.()}
           />
         </div>
       </FeedLayout>
