@@ -1,34 +1,23 @@
 import React from "react";
 import Image from "next/image";
 import { clsx } from "clsx";
+import { WorldIDWidget } from "@worldcoin/id";
 
 interface IAvatarProps {
-  children: any;
-  className?: string;
-  size?: keyof typeof sizes;
+  onSuccess: any;
 }
 
-const sizes = {
-  sm: "6",
-  md: "7",
-  default: "10",
-  "4xl": "26",
-};
-
 export const WorldcoinVerification = ({
-  children,
-  className,
-  size = "default",
+  onSuccess,
 }: IAvatarProps): JSX.Element => {
   return (
-    <div
-      className={clsx(
-        `w-${sizes[size]} h-${sizes[size]} flex items-center justify-center rounded-full overflow-hidden`,
-        className
-      )}
-    >
-      {children}
-    </div>
+    <WorldIDWidget
+      actionId="wid_staging_5ddea39dde98f1cd36ad04c0e19931b5" // obtain this from developer.worldcoin.org
+      signal="benefactor_verification"
+      enableTelemetry
+      onSuccess={onSuccess}
+      onError={(error) => console.error(error)}
+    />
   );
 };
 
