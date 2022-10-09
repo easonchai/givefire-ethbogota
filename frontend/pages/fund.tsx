@@ -147,7 +147,7 @@ const Fund: NextPage = () => {
                 className="w-[30px] h-[30px]"
               />
             </Avatar>
-            <p className="text-sm">vitalik.eth proposed this fund</p>
+            <p className="text-sm">{firstName} proposed this fund</p>
           </div>
           <div className="flex flex-row items-center justify-between w-full">
             <div className="flex flex-row items-center">

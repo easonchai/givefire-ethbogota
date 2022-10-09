@@ -18,7 +18,7 @@ export const PillButton = ({
   return (
     <button
       className={clsx(
-        "rounded-full py-2 px-[10px] text-primary transition-all duration-400 min-w-19",
+        "rounded-full py-2 px-4 text-primary transition-all duration-400 min-w-19",
         selected && "bg-primary bg-opacity-20",
         className
       )}

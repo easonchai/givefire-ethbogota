@@ -14,54 +14,16 @@ import Card from "../src/components/Card";
 import clsx from "clsx";
 import TrendingView from "../src/views/TrendingView";
 import RecentView from "../src/views/RecentView";
+import PillButton from "../src/components/PillButton";
+import { useRouter } from "next/router";
+import ReactSlider from "react-slider";
 
 const Proposal: NextPage = () => {
-  const { address, connector, isConnected } = useAccount();
-
-  const [avatar, setAvatar] = React.useState<string | null>();
-  const [firstAvatar, setFirstAvatar] = React.useState<string | null>();
-  const [name, setName] = React.useState<string | null>();
-  const [firstName, setFirstName] = React.useState<string | null>();
-  const [view, setView] = React.useState<"Recent" | "Trending">("Trending");
-
-  React.useEffect(() => {
-    const provider = new ethers.providers.AlchemyProvider(
-      "homestead",
-      process.env.NEXT_PUBLIC_ALCHEMY_KEY
-    );
-
-    const getEnsData = async () => {
-      const name = await provider.lookupAddress(
-        "0x07e96f02d57a1f0eace103028d0b26fd2d5f283e"
-      );
-      setName(name);
-
-      if (name) {
-        const avatar = await provider.getAvatar(name);
-        setAvatar(avatar);
-      }
-
-      const firstName = await provider.lookupAddress(addresses[2]);
-      setFirstName(firstName);
-
-      if (firstName) {
-        const avatar = await provider.getAvatar(firstName);
-        setFirstAvatar(avatar);
-      }
-    };
-
-    getEnsData();
-  }, []);
-
-  const addresses = [
-    "0x53C61cfb8128ad59244E8c1D26109252ACe23d14",
-    "0x53C61cfb8128ad59244E8c1D26109252ACe23d88",
-    "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
-    "0xd8da6bf26964af9d7eed9e03e53415d388a96045",
-  ];
+  const router = useRouter();
+  const [donationAmount, setDonationAmount] = React.useState<number>(5);
 
   return (
-    <MainLayout>
+    <MainLayout className="bg-secondary relative">
       <Head>
         <title>GiveFire</title>
         <meta
@@ -71,89 +33,117 @@ const Proposal: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <MobileLayout>
-        <div className="w-full flex flex-row items-center justify-between">
-          <img src="/icons/bell.svg" alt="bell" />
-          <Avatar>
-            {avatar ? (
-              <img src={avatar} alt={name} className="w-10 h-10" />
-            ) : (
-              <Blockies seed={address} />
-            )}
-          </Avatar>
-        </div>
-        <div className="w-full h-full flex flex-col items-start justify-center my-6">
-          <p className="text-sm">Your Firegiving Circle</p>
-          <div className="flex flex-row justify-center space-x-2 mt-4 mb-1">
-            <Avatar size="sm" className="mr-2">
-              <img src={avatar} alt={name} className="w-6 h-6" />
+      <img
+        src="/icons/close.svg"
+        alt=""
+        className="absolute top-4 right-4 cursor-pointer"
+        onClick={() => router.push("/fund")}
+      />
+      <FeedLayout className="my-12">
+        <img
+          src="/campaigns/mbmc_cover.png"
+          alt=""
+          className="w-36 h-36 mb-6"
+        />
+        <p className="text-[28px] mb-1">My Body, My Rights</p>
+        <p className="text-sm mb-9">by UnicornDAO</p>
+
+        <p className="text-sm mb-4">Her DAO gives back 🌱 </p>
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex flex-row items-center">
+            <Avatar size="md" className="mr-2">
+              <Blockies seed={"a"} />
             </Avatar>
-            +
-            {/* {addresses.map((address, index) => (
-              <Avatar
-                className={`z-[${index + 1}] transfrom -translate-x-${
-                  4 * index
-                }`}
-                key={index}
-                size="sm"
-              >
-                <img src={`/avatars/address${index + 1}.png`} />
-              </Avatar>
-            ))} */}
-            <Avatar className={`z-[0] transfrom -translate-x-0`} size="sm">
-              <img src={firstAvatar} alt={firstName} />
-            </Avatar>
-            <Avatar className={`z-[1] transfrom -translate-x-4`} size="sm">
-              <img src={`/avatars/address2.png`} />
-            </Avatar>
-            <Avatar className={`z-[2] transfrom -translate-x-8`} size="sm">
-              <img src={`/avatars/address3.png`} />
-            </Avatar>
-            <Avatar className={`z-[3] transfrom -translate-x-12`} size="sm">
-              <img src={`/avatars/address4.png`} />
-            </Avatar>
+            <p className="text-sm">vitalik.eth proposed this fund</p>
           </div>
-          <p className="text-[28px] mb-6">Her DAO gives back 🌱</p>
-          <Avatar size="md" className="mb-2">
-            <img
-              src={firstAvatar}
-              alt={firstName}
-              className="w-[30px] h-[30px]"
+          <div className="flex items-center justify-end">
+            <p className="text-sm">USDC 10</p>
+          </div>
+        </div>
+        <div className="w-full border-t-2 border-offwhite my-4" />
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex flex-row items-center">
+            <Avatar size="md" className="mr-2">
+              <Blockies seed={"b"} />
+            </Avatar>
+            <p className="text-sm">Lou</p>
+          </div>
+          <div className="flex items-center justify-end">
+            <p className="text-sm">USDC 8</p>
+          </div>
+        </div>
+        <div className="w-full border-t-2 border-offwhite my-4" />
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex flex-row items-center">
+            <Avatar size="md" className="mr-2">
+              <Blockies seed={"c"} />
+            </Avatar>
+            <p className="text-sm">Gem</p>
+          </div>
+          <div className="flex items-center justify-end">
+            <p className="text-sm">USDC 10</p>
+          </div>
+        </div>
+        <div className="w-full border-t-2 border-offwhite my-4" />
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex flex-row items-center">
+            <Avatar size="md" className="mr-2">
+              <Blockies seed={"d"} />
+            </Avatar>
+            <p className="text-sm">Jenni</p>
+          </div>
+          <div className="flex items-center justify-end">
+            <p className="text-sm">USDC 10</p>
+          </div>
+        </div>
+        <div className="w-full border-t-2 border-offwhite my-4" />
+        <div className="flex flex-row items-center justify-between w-full">
+          <div className="flex flex-row items-center">
+            <Avatar size="md" className="mr-2">
+              <Blockies seed={"e"} />
+            </Avatar>
+            <p className="text-sm">Emma</p>
+          </div>
+          <div className="flex items-center justify-end">
+            <p className="text-sm text-primary">USDC {donationAmount}</p>
+          </div>
+        </div>
+        <p className="text-sm mt-6 mb-2">Adjust amount (USDC)</p>
+        <ReactSlider
+          className="w-full mt-4 mb-8"
+          defaultValue={donationAmount}
+          value={donationAmount}
+          min={1}
+          max={10}
+          thumbClassName="example-thumb"
+          trackClassName="example-track"
+          renderThumb={(props, state) => (
+            <div
+              {...props}
+              className="w-6 h-6 bg-primary rounded-full transform -translate-y-[40%] outline-none"
             />
-          </Avatar>
-          <div className="flex flex-row items-center justify-between w-full">
-            <p className="text-sm">
-              {firstName} proposed{" "}
-              <a href="/fund" className="underline">
-                My Body, My Rights
-              </a>
-            </p>
-            <img src="/icons/arrow-right.svg" alt="arrow" />
-          </div>
-        </div>
-      </MobileLayout>
-      <FeedLayout>
-        <div className="flex flex-row items-center justify-end space-x-2 w-full">
-          <button
-            className={clsx(
-              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
-              view === "Recent" && "bg-primary bg-opacity-20"
-            )}
-            onClick={() => setView("Recent")}
+          )}
+          renderTrack={(props, state) => (
+            <div
+              {...props}
+              className="h-[3px] bg-primary bg-opacity-20 rounded-full"
+            />
+          )}
+          onChange={(value) => setDonationAmount(value)}
+        />
+        <div className="flex flex-row items-center justify-between w-full">
+          <p
+            className="text-sm text-primary"
+            onClick={() => router.push("/fund")}
           >
-            Recent
-          </button>
-          <button
-            className={clsx(
-              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
-              view === "Trending" && "bg-primary bg-opacity-20"
-            )}
-            onClick={() => setView("Trending")}
-          >
-            Trending
-          </button>
+            Reject
+          </p>
+          <PillButton
+            value="Donate"
+            selected={true}
+            onSelect={() => console.log("magic")}
+          />
         </div>
-        {view === "Recent" ? <RecentView /> : <TrendingView />}
       </FeedLayout>
     </MainLayout>
   );

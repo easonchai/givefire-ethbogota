@@ -15,6 +15,7 @@ import clsx from "clsx";
 import TrendingView from "../src/views/TrendingView";
 import RecentView from "../src/views/RecentView";
 import PillButton from "../src/components/PillButton";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const { address, connector, isConnected } = useAccount();
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
   const [name, setName] = React.useState<string | null>();
   const [firstName, setFirstName] = React.useState<string | null>();
   const [view, setView] = React.useState<"Recent" | "Trending">("Trending");
+  const router = useRouter();
 
   React.useEffect(() => {
     const provider = new ethers.providers.AlchemyProvider(
@@ -127,7 +129,11 @@ const Home: NextPage = () => {
                 My Body, My Rights
               </a>
             </p>
-            <img src="/icons/arrow-right.svg" alt="arrow" />
+            <img
+              src="/icons/arrow-right.svg"
+              alt="arrow"
+              onClick={() => router.push("/fund")}
+            />
           </div>
         </div>
       </MobileLayout>
