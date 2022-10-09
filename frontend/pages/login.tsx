@@ -54,7 +54,7 @@ const Login: NextPage = () => {
   }, []);
 
   return (
-    <MainLayout className="justify-end bg-secondary relative">
+    <MainLayout className="justify-end relative" bg="bg-secondary">
       <Head>
         <title>GiveFire</title>
         <meta
