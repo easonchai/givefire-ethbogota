@@ -2,68 +2,69 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin", "linux-arm64-openssl-1.1.x"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("HEROKU_DB_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Donor {
-  donorId    String  @id @default(uuid()) @unique
-  donorNickname String  @unique
-  donorGroupId String? 
-  donorWalletAddress String @unique
-  Group Group? @relation(fields: [donorGroupId], references: [groupId])
+  donorId            String  @id @unique @default(uuid())
+  donorNickname      String  @unique
+  donorGroupId       String?
+  donorWalletAddress String  @unique
+  Group              Group?  @relation(fields: [donorGroupId], references: [groupId])
 }
 
 model Group {
-  groupId        String     @id @default(uuid()) @unique
+  groupId   String     @id @unique @default(uuid())
   groupName String
   proposals Proposal[]
-  donors Donor[]
+  donors    Donor[]
 }
 
 model Proposal {
-  proposalId String @id @default(uuid()) @unique
+  proposalId    String       @id @unique @default(uuid())
   beneficiaryId String?
-  groupId String @default("")
-  startDate DateTime
-  endDate DateTime
-  votes String[]
-  isApproved Boolean @default(false)
-  funders Funders[] 
-  donations Donations[]
-  Group Group? @relation(fields: [groupId], references: [groupId])
-  Beneficiary Beneficiary? @relation(fields: [beneficiaryId], references: [beneficiaryId])
-  }
-
+  groupId       String       @default("")
+  startDate     DateTime
+  endDate       DateTime
+  votes         String[]
+  isApproved    Boolean      @default(false)
+  funders       Funders[]
+  donations     Donations[]
+  Group         Group?       @relation(fields: [groupId], references: [groupId])
+  Beneficiary   Beneficiary? @relation(fields: [beneficiaryId], references: [beneficiaryId])
+}
 
 model Beneficiary {
-  beneficiaryId String @id @default(uuid()) @unique
-  fundingTarget Float
+  beneficiaryId   String      @id @unique @default(uuid())
+  fundingTarget   Float
   fundingReceived Float
-  startDate DateTime
-  endDate DateTime
-  donations Donations[]
-  proposals Proposal[]
+  worldcoinHash   String
+  startDate       DateTime
+  endDate         DateTime
+  donations       Donations[]
+  proposals       Proposal[]
 }
 
 model Donations {
-  donationId String @id @default(uuid()) @unique
-  beneficiaryId String
-  proposalId String
+  donationId        String       @id @unique @default(uuid())
+  beneficiaryId     String
+  proposalId        String
   donationTimestamp DateTime
-  donationAmount Float
-  Beneficiary Beneficiary? @relation(fields: [beneficiaryId], references: [beneficiaryId])
-  Proposal Proposal? @relation(fields: [proposalId], references: [proposalId])
+  donationAmount    Float
+  Beneficiary       Beneficiary? @relation(fields: [beneficiaryId], references: [beneficiaryId])
+  Proposal          Proposal?    @relation(fields: [proposalId], references: [proposalId])
 }
 
 model Funders {
-  funderId String @id @default(uuid()) @unique
-  proposalId String
-  donorId String
+  funderId     String    @id @unique @default(uuid())
+  proposalId   String
+  donorId      String
   funderAmount Float
-  Proposal Proposal? @relation(fields: [proposalId], references: [proposalId])
+  Proposal     Proposal? @relation(fields: [proposalId], references: [proposalId])
 }
