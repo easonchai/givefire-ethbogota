@@ -4,7 +4,9 @@ import { clsx } from "clsx";
 import Card from "../components/Card";
 import Donation from "../components/Donation";
 
-interface IRecentViewProps {}
+interface IRecentViewProps {
+  textColor?: string;
+}
 
 const donations = [
   {
@@ -45,18 +47,20 @@ const donations = [
   },
 ];
 
-export const RecentView = ({}: IRecentViewProps): JSX.Element => {
+export const RecentView = ({
+  textColor = "offwhite",
+}: IRecentViewProps): JSX.Element => {
   return (
-    <>
+    <div className={clsx(`text-${textColor}`, "w-full")}>
       {donations.map((donation, index) => (
         <>
           <Donation donation={donation} key={index} />
           {index !== donations.length - 1 && (
-            <div className="w-full border-t-2 border-offwhite my-4" />
+            <div className={`w-full border-t-2 border-${textColor} my-4`} />
           )}
         </>
       ))}
-    </>
+    </div>
   );
 };
 

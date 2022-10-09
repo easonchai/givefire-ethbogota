@@ -9,6 +9,11 @@ module.exports = {
         offwhite: "#F4EDE3",
         profiles: "#2F482A",
       },
+      minWidth: {
+        16: "4rem",
+        19: "4.75rem",
+        20: "5rem",
+      },
     },
   },
   plugins: [],

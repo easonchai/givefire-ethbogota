@@ -14,9 +14,8 @@ import Card from "../src/components/Card";
 import clsx from "clsx";
 import TrendingView from "../src/views/TrendingView";
 import RecentView from "../src/views/RecentView";
-import PillButton from "../src/components/PillButton";
 
-const Home: NextPage = () => {
+const Proposal: NextPage = () => {
   const { address, connector, isConnected } = useAccount();
 
   const [avatar, setAvatar] = React.useState<string | null>();
@@ -32,21 +31,23 @@ const Home: NextPage = () => {
     );
 
     const getEnsData = async () => {
-      provider
-        .lookupAddress("0x07e96f02d57a1f0eace103028d0b26fd2d5f283e")
-        .then((name) => {
-          setName(name);
-          if (name) {
-            provider.getAvatar(name).then((avatar) => setAvatar(avatar));
-          }
-        });
+      const name = await provider.lookupAddress(
+        "0x07e96f02d57a1f0eace103028d0b26fd2d5f283e"
+      );
+      setName(name);
 
-      provider.lookupAddress(addresses[2]).then((name) => {
-        setFirstName(name);
-        if (name) {
-          provider.getAvatar(name).then((avatar) => setFirstAvatar(avatar));
-        }
-      });
+      if (name) {
+        const avatar = await provider.getAvatar(name);
+        setAvatar(avatar);
+      }
+
+      const firstName = await provider.lookupAddress(addresses[2]);
+      setFirstName(firstName);
+
+      if (firstName) {
+        const avatar = await provider.getAvatar(firstName);
+        setFirstAvatar(avatar);
+      }
     };
 
     getEnsData();
@@ -133,16 +134,24 @@ const Home: NextPage = () => {
       </MobileLayout>
       <FeedLayout>
         <div className="flex flex-row items-center justify-end space-x-2 w-full">
-          <PillButton
-            value="Recent"
-            onSelect={() => setView("Recent")}
-            selected={view === "Recent"}
-          />
-          <PillButton
-            value="Trending"
-            onSelect={() => setView("Trending")}
-            selected={view === "Trending"}
-          />
+          <button
+            className={clsx(
+              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
+              view === "Recent" && "bg-primary bg-opacity-20"
+            )}
+            onClick={() => setView("Recent")}
+          >
+            Recent
+          </button>
+          <button
+            className={clsx(
+              "rounded-full py-2 px-[10px] text-primary transition-all duration-400",
+              view === "Trending" && "bg-primary bg-opacity-20"
+            )}
+            onClick={() => setView("Trending")}
+          >
+            Trending
+          </button>
         </div>
         {view === "Recent" ? <RecentView /> : <TrendingView />}
       </FeedLayout>
@@ -150,4 +159,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Proposal;
