@@ -51,6 +51,7 @@ app.post('/createDonor', async (req, res) => {
     })
     res.json(donor)
     }
+})
 
 
 /**
@@ -370,40 +371,146 @@ app.delete('/deleteGroup/:groupId', async (req, res) => {
 
 /**
  * Create Proposal
- * 
- * A cron job will be used to create a proposal every 7 days, the end date will be 12 hours after the start date. Based on the previous proposal's start date, the next time a proposal is created is 7 days after this start date. \
- * Send a notification to all donors in the group that a new proposal has been created.
+ * Cron Job every 7 days to check in every group and see if there is any active proposals by comapring the current date to the proposal's end date. If no longer active, then a new proposal will be created.
  */
-
-//Check for existing proposal by group ID. If there is no proposal, create a new proposal. If there is a proposal, check if the proposal has ended. If the proposal has ended, create a new proposal. If the proposal has not ended, return an error. Check this every 7 days.
 cron.schedule('0 0 * * *', async () => {
     const groups = await prisma.group.findMany()
     groups.forEach(async (group) => {
-        const proposal = await prisma.proposal.findFirst({
+        const proposals = await prisma.proposal.findMany({
             where: {
                 groupId: group.groupId
             }
         })
-        if (!proposal) {
-            const newProposal = await prisma.proposal.create({
-                data: {
-                    groupId: group.groupId,
-                    startDate: new Date(),
-                    endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000)
-                }
-            })
-        } else if (proposal.endDate < new Date()) {
-            const newProposal = await prisma.proposal.create({
-                data: {
-                    groupId: group.groupId,
-                    startDate: new Date(),
-                    endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000)
+        proposals.forEach(async (proposal) => {
+            if (proposal.endDate < new Date()) {
+                const newProposal = await prisma.proposal.create({
+                    data: {
+                        beneficiaryId: proposal.beneficiaryId,
+                        groupId: group.groupId,
+                        startDate: new Date(),
+                        endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000),
+                    }
+                })
+            }
+        })
+    })
+})
+
+/**
+ * Get All Proposals
+ */
+app.get('/proposals', async (req, res) => {
+    const proposals = await prisma.proposal.findMany()
+    res.json(proposals)
+})
+
+/**
+ * Get Proposal by Proposal ID
+ * 
+ * @param {string} proposalId
+ */
+app.get('/getProposal/:proposalId', async (req, res) => {
+    const proposal = await prisma.proposal.findFirst({
+        where: {
+            proposalId: req.params.proposalId
+        }
+    })
+    res.json(proposal)
+})
+
+/**
+ * Get All Proposals by Group ID
+ * 
+ * @param {string} groupId
+ */
+app.get('/getProposalsFromGroup/:groupId', async (req, res) => {
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            groupId: req.params.groupId
+        }
+    })
+    res.json(proposals)
+})
+
+/**
+ * Get All Proposals by Beneficiary ID
+ * 
+ * @param {string} beneficiaryId
+ */
+app.get('/getProposalsFromBeneficiary/:beneficiaryId', async (req, res) => {
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            beneficiaryId: req.params.beneficiaryId
+        }
+    })
+    res.json(proposals)
+})
+
+/**
+ * Update Proposal Votes
+ * 
+ * @param {string} proposalId
+ * @param {object} votes
+ */
+app.put('/updateProposalVotes/:proposalId', async (req, res) => {
+    const { votes } = req.body.votes
+    if (!votes) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const proposal = await prisma.proposal.update({
+            where: {
+                proposalId: req.params.proposalId
+            },
+            data: {
+                proposalId: req.params.proposalId,
+           }
+
+        })
+        res.json(proposal)
+    }
+})
+
+/**
+ * Add Funders to Proposal
+ * 
+ * @param {string} proposalId
+ * @param {string} donorId
+ * @param {number} amount
+ */
+app.put('/addFundersToProposal/:proposalId', async (req, res) => {
+    const { donorId, amount } = req.body
+    if (!donorId || !amount) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        //create new data in the funders table
+        const funder = await prisma.funders.create({
+            data: {
+                donorId: donorId,
+                funderAmount: amount
+            }
+        })
+        //connect the new data to the proposal
+        const proposal = await prisma.proposal.update({
+            where: {
+                proposalId: req.params.proposalId
+            },
+            data: {
+                funders: {
+                    connect: {
+                        funderId: funder.funderId
+                    }
                 }
             }
-            )}
-        }
-    )}
-)
+        })
+        res.json(proposal)
+    }
+})
+
+
+
+
 
 /**
  * Get All Proposals
@@ -414,23 +521,164 @@ cron.schedule('0 0 * * *', async () => {
  * 
  * 1. Create Funder
  * 2. Get All Funders by Proposal ID
- * 3. 
+ * 3. Get Funder by Funder ID
+ * 4. Update Funder Amount
 */
+app.post('/createFunder', async (req, res) => {
+    const { funderAmount, proposalId, donorId } = req.body
+    if (!funderAmount || !proposalId || !donorId) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const funder = await prisma.funders.create({
+            data: {
+                funderAmount: funderAmount,
+                proposalId: proposalId,
+                donorId: donorId
+            }
+        })
+        res.json(funder)
+    }
+})
 
-        
+
+/**
+ * Get All Funders by Proposal ID
+ * 
+ * @param {string} proposalId
+ */
+app.get('/getFundersFromProposal/:proposalId', async (req, res) => {
+    const funders = await prisma.funders.findMany({
+        where: {
+            proposalId: req.params.proposalId
+        }
+    })
+    res.json(funders)
+})
+
+/**
+ * Get Funder by Funder ID
+ * 
+ * @param {string} funderId
+ */
+app.get('/getFunder/:funderId', async (req, res) => {
+    const funder = await prisma.funders.findFirst({
+        where: {
+            funderId: req.params.funderId
+        }
+    })
+    res.json(funder)
+})
+
+/**
+ * Update Funder Amount
+ * 
+ * @param {string} funderId
+ * @param {string} funderAmounts
+ */
+app.put('/updateFunderAmount/:funderId', async (req, res) => {
+    const { funderAmount } = req.body
+    if (!funderAmount) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const funder = await prisma.funders.update({
+            where: {
+                funderId: req.params.funderId
+            },
+            data: {
+                funderAmount: funderAmount
+            }
+        })
+        res.json(funder)
+    }
+})
 
 
 
 
+/**
+ * API Declarations for Beneficiaries
+ * 
+ * 1. Create Beneficiary
+ * 2. Update Beneficiary Details
+ * 3. Set donators to Beneficiary   
+ * 4. Set Proposal
+ */
+app.post('/createBeneficiary', async (req, res) => {
+    const { fundingTarget, fundingReceived, startDate, endDate } = req.body 
+    if (!fundingTarget || !fundingReceived || !startDate || !endDate) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const beneficiary = await prisma.beneficiary.create({
+            data: {
+                fundingTarget: fundingTarget,
+                fundingReceived: fundingReceived,
+                startDate: startDate,
+                endDate: endDate
+            }
+        })
+        res.json(beneficiary)
+    }
+})
+
+/** Set Donators to Beneficiary
+ * 
+ * @param {string} beneficiaryId
+ * @param {string} donationId
+*/
+app.put('/setDonatorsToBeneficiary/:beneficiaryId', async (req, res) => {
+    //Create new data in the donators table
+    const donator = await prisma.donations.create({
+        data: {
+            //get current timestamp
+            donationTimestamp: new Date().toISOString(),
+            donationAmount: req.body.donationAmount,
+            proposalId: req.body.proposalId,            
+        }
+    })
+    //Connect the new data to the beneficiary
+    const beneficiary = await prisma.beneficiary.update({
+        where: {
+            beneficiaryId: req.params.beneficiaryId
+        },
+        data: {
+            donations: {
+                connect: {
+                    donationId: donator.donationId
+                }
+            }
+        }
+    })
+    res.json(beneficiary)
+})
 
 
 
-    
+/**
+ * API Declarations for Donations
+ * 
+ * 1. Create Donation
+ */
+app.post('/createDonation', async (req, res) => {
+    const { beneficiaryId, proposalId, donationTimestamp, donationAmount } = req.body
+    if (!beneficiaryId || !proposalId || !donationTimestamp || !donationAmount) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const donation = await prisma.donations.create({
+            data: {
+                beneficiaryId: beneficiaryId,
+                proposalId: proposalId,
+                donationTimestamp: donationTimestamp,
+                donationAmount: donationAmount
+            }
+        })
+        res.json(donation)
+    }
+})
 
-
-
-const server = app.listen(3000, () =>
-  console.log(`
-🚀 Server ready at: http://localhost:3000
-⭐️ See sample requests: http://pris.ly/e/ts/rest-express#3-using-the-rest-api`),
-)
+app.listen(3000, () => {
+    console.log('Server started on port 3000')
+})
