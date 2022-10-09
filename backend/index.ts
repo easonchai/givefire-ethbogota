@@ -15,7 +15,7 @@ app.use(express.json())
  * 3. Proposal
  * 4. Funders
  * 5. Donations
- * 6. Beneficiary
+ * 6. Beneficiary       
  */
 
 /**
@@ -175,6 +175,7 @@ app.post('/createGroup', async (req, res) => {
         res.json(group)
         }
     })
+})
 
 /**
  * Get Group by Group ID
@@ -268,27 +269,27 @@ app.put('/removeDonorFromGroup/:groupId', async (req, res) => {
  * @param {string} proposalId
  * @param {string} groupId
  */
-app.put('/addProposalToGroup/:groupId', async (req, res) => {
-    const { proposalId } = req.body
-    if (!proposalId) {
-        res.status(400).json({ error: 'Missing required fields' })
-        return
-    } else {
-        const group = await prisma.group.update({
-            where: {
-                groupId: req.params.groupId
-            },
-            data: {
-                proposals: {
-                    connect: {
-                        proposalId: proposalId
-                    }
-                }
-            }
-        })
-        res.json(group)
-    }
-})
+// app.put('/addProposalToGroup/:groupId', async (req, res) => {
+//     const { proposalId } = req.body
+//     if (!proposalId) {
+//         res.status(400).json({ error: 'Missing required fields' })
+//         return
+//     } else {
+//         const group = await prisma.group.update({
+//             where: {
+//                 groupId: req.params.groupId
+//             },
+//             data: {
+//                 proposals: {
+//                     connect: {
+//                         proposalId: proposalId
+//                     }
+//                 }
+//             }
+//         })
+//         res.json(group)
+//     }
+// })
 
 /**
  * Remove Proposal from Group
@@ -376,34 +377,206 @@ app.delete('/deleteGroup/:groupId', async (req, res) => {
  */
 
 //Check for existing proposal by group ID. If there is no proposal, create a new proposal. If there is a proposal, check if the proposal has ended. If the proposal has ended, create a new proposal. If the proposal has not ended, return an error. Check this every 7 days.
-cron.schedule('0 0 * * *', async () => {
-    const groups = await prisma.group.findMany()
-    groups.forEach(async (group) => {
-        const proposal = await prisma.proposal.findFirst({
+// cron.schedule('0 0 * * *', async () => {
+//     const groups = await prisma.group.findMany()
+//     groups.forEach(async (group) => {
+//         const proposal = await prisma.proposal.findFirst({
+//             where: {
+//                 groupId: group.groupId
+//             }
+//         })
+//         proposals.forEach(async (proposal) => {
+//             if (proposal.endDate < new Date()) {
+//                 const newProposal = await prisma.proposal.create({
+//                     data: {
+//                         beneficiaryId: proposal.beneficiaryId,
+//                         groupId: group.groupId,
+//                         startDate: new Date(),
+//                         endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000),
+//                     }
+//                 })
+//             }
+//         })
+//     })
+// })
+
+/**
+ * Get All Proposals
+ */
+app.get('/proposals', async (req, res) => {
+    const proposals = await prisma.proposal.findMany()
+    res.json(proposals)
+})
+
+/**
+ * Get Proposal by Proposal ID
+ * 
+ * @param {string} proposalId
+ */
+app.get('/getProposal/:proposalId', async (req, res) => {
+    const proposal = await prisma.proposal.findFirst({
+        where: {
+            proposalId: req.params.proposalId
+        }
+    })
+    res.json(proposal)
+})
+
+/**
+ * Get All Proposals by Group ID
+ * 
+ * @param {string} groupId
+ */
+app.get('/getProposalsFromGroup/:groupId', async (req, res) => {
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            groupId: req.params.groupId
+        }
+    })
+    res.json(proposals)
+})
+
+/**
+ * Get All Proposals by Beneficiary ID
+ * 
+ * @param {string} beneficiaryId
+ */
+app.get('/getProposalsFromBeneficiary/:beneficiaryId', async (req, res) => {
+    const proposals = await prisma.proposal.findMany({
+        where: {
+            beneficiaryId: req.params.beneficiaryId
+        }
+    })
+    res.json(proposals)
+})
+
+/**
+ * Update Proposal Votes
+ * 
+ * @param {string} proposalId
+ * @param {object} votes
+ */
+app.put('/updateProposalVotes/:proposalId', async (req, res) => {
+    const { votes } = req.body.votes
+    if (!votes) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    }
+})
+
+/**
+ * Add Funders to Proposal
+ * 
+ * @param {string} proposalId
+ * @param {string} funderId
+ */
+app.put('/addFunderToProposal/:proposalId', async (req, res) => {
+    const { funderId } = req.body
+    if (!funderId) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const proposal = await prisma.proposal.update({
             where: {
-                groupId: group.groupId
+                proposalId: req.params.proposalId
+            },
+            data: {
+                funders: {
+                    connect: {
+                        funderId: funderId
+                    }
+                }
             }
         })
-        if (!proposal) {
-            const newProposal = await prisma.proposal.create({
-                data: {
-                    groupId: group.groupId,
-                    startDate: new Date(),
-                    endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000)
-                }
-            })
-        } else if (proposal.endDate < new Date()) {
-            const newProposal = await prisma.proposal.create({
-                data: {
-                    groupId: group.groupId,
-                    startDate: new Date(),
-                    endDate: new Date(new Date().getTime() + 12 * 60 * 60 * 1000)
+        res.json(proposal)
+    }
+})
+
+/**
+ * Add Beneficiary to Proposal
+ * 
+ * @param {string} proposalId
+ * @param {string} beneficiaryId
+ */
+app.put('/addBeneficiaryToProposal/:proposalId', async (req, res) => {
+    const { beneficiaryId } = req.body
+    if (!beneficiaryId) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const proposal = await prisma.proposal.update({
+            where: {
+                proposalId: req.params.proposalId
+            },
+            data: {
+                beneficiaryId: beneficiaryId
+            }
+        })
+        res.json(proposal)
+    }
+})
+
+/**
+ * Delete Proposal by Proposal ID
+ * 
+ * @param {string} proposalId
+ */
+app.delete('/deleteProposal/:proposalId', async (req, res) => {
+    if (!req.params.proposalId) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        const proposal = await prisma.proposal.delete({
+            where: {
+                proposalId: req.params.proposalId
+            }
+        })
+        res.json(proposal)
+    }
+})
+
+/**
+ * API Declarations for Funder
+ * 
+ * 1. Create F
+
+/**
+ * Add Funders to Proposal
+ * 
+ * @param {string} proposalId
+ * @param {string} donorId
+ * @param {number} amount
+ */
+app.put('/addFundersToProposal/:proposalId', async (req, res) => {
+    const { donorId, amount } = req.body
+    if (!donorId || !amount) {
+        res.status(400).json({ error: 'Missing required fields' })
+        return
+    } else {
+        //create new data in the funders table
+        const funder = await prisma.funders.create({
+            data: {
+                donorId: donorId,
+                funderAmount: amount
+            }
+        })
+        //connect the new data to the proposal
+        const proposal = await prisma.proposal.update({
+            where: {
+                proposalId: req.params.proposalId
+            },
+            data: {
+                funders: {
+                    connect: {
+                        funderId: funder.funderId
+                    }
                 }
             }
-            )}
-        }
-    )}
-)
+        })
+        res.json(proposal)
+    }
+})
+
 
 /**
  * Get All Proposals

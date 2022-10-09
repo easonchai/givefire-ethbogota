@@ -1,11 +1,10 @@
 {
-    "compilerOptions": {
-      "sourceMap": true,
-      "outDir": "dist",
-      "strict": true,
-      "lib": ["esnext"],
-      "esModuleInterop": true,
-      "target": "ES2018"
-    }
+  "compilerOptions": {
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "target": "ES2018"
   }
-  
+}
