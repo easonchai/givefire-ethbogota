@@ -75,7 +75,7 @@ const Verify: NextPage = () => {
   };
 
   return (
-    <MainLayout className="bg-primary">
+    <MainLayout>
       <Head>
         <title>GiveFire</title>
         <meta
@@ -87,7 +87,7 @@ const Verify: NextPage = () => {
 
       <MobileLayout className="py-24 ">
         <Avatar size="4xl">
-          <Blockies seed={address} size={20} scale={5} />
+          <Blockies seed={address || "0xbad"} size={20} scale={5} />
         </Avatar>
         <input
           type="text"
