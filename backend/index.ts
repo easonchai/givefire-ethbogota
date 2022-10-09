@@ -457,17 +457,8 @@ app.put('/updateProposalVotes/:proposalId', async (req, res) => {
     if (!votes) {
         res.status(400).json({ error: 'Missing required fields' })
         return
-    } else {
-        const proposal = await prisma.proposal.update({
-            where: {
-                proposalId: req.params.proposalId
-            },
-            data: {
-                proposalId: req.params.proposalId,
-           }
-
-        })
-        res.json(proposal)
+    } else if //if current votes is 5, error
+    
     }
 })
 
