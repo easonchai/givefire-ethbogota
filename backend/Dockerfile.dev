@@ -1,0 +1,11 @@
+FROM node:16-slim
+
+# For compatibility with M1 Macs
+RUN apt-get update && \
+    apt-get install -y procps && \
+    apt-get install -y openssl
+
+# Create app directory
+WORKDIR /app
+
+CMD npm run dev

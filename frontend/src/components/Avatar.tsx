@@ -12,6 +12,7 @@ const sizes = {
   sm: "6",
   md: "7",
   default: "10",
+  "4xl": "26",
 };
 
 export const Avatar = ({

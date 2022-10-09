@@ -99,7 +99,7 @@ const Home: NextPage = () => {
             {avatar ? (
               <img src={avatar} alt={name} className="w-10 h-10" />
             ) : (
-              <Blockies seed={address} />
+              <Blockies seed={address || "0xbad"} />
             )}
           </Avatar>
         </div>
