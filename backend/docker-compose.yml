@@ -1,0 +1,36 @@
+services:
+  givefire-backend:
+    container_name: givefire-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /app
+    restart: always
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      - givefire-database
+    networks:
+      - givefire
+  givefire-database:
+    container_name: givefire-database
+    image: postgres:14
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - givefire-database:/var/lib/postgresql/data
+    networks:
+      - givefire
+volumes:
+  givefire-backend:
+  givefire-database:
+
+networks:
+  givefire:
